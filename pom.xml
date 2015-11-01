@@ -36,5 +36,9 @@
         <module>Common</module>
     </modules>
 
+    <properties>
+        <scala.version>2.11</scala.version>
+        <akka.version>2.4.0</akka.version>
+    </properties>
 
 </project>
