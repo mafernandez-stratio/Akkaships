@@ -32,5 +32,20 @@
 
     <artifactId>IntegrationTests</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>es.codemotion.akkaships</groupId>
+            <artifactId>Client</artifactId>
+            <scope>compile</scope>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>es.codemotion.akkaships</groupId>
+            <artifactId>Common</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
 
 </project>
