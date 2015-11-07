@@ -33,17 +33,21 @@
 
     <artifactId>Client</artifactId>
 
+    <properties>
+        <lanterna.version>3.0.0-beta1</lanterna.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.googlecode.lanterna</groupId>
             <artifactId>lanterna</artifactId>
-            <version>3.0.0-beta1</version>
+            <version>${lanterna.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>es.codemotion.akkaships</groupId>
             <artifactId>Common</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
