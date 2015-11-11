@@ -30,10 +30,10 @@
     <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
     <modules>
+        <module>Common</module>
         <module>Server</module>
         <module>Client</module>
         <module>IntegrationTests</module>
-        <module>Common</module>
     </modules>
 
     <properties>
@@ -62,17 +62,25 @@
     <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>scala-compile-first</id>
+                <phase>process-resources</phase>
+                <goals>
+                    <goal>add-source</goal>
+                    <goal>compile</goal>
+                </goals>
+            </execution>
+            <execution>
+                <id>scala-test-compile</id>
+                <phase>process-test-resources</phase>
+                <goals>
+                    <goal>testCompile</goal>
+                </goals>
+            </execution>
+        </executions>
         <configuration>
             <recompileMode>modified-only</recompileMode>
-        </configuration>
-    </plugin>
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-            <skipMain>true</skipMain>
-            <skip>true</skip>
         </configuration>
     </plugin>
     </plugins>

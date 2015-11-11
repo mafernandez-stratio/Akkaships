@@ -32,6 +32,9 @@
     </parent>
 
     <artifactId>Client</artifactId>
+    <packaging>jar</packaging>
+    <name>Client</name>
+
 
     <properties>
         <lanterna.version>3.0.0-beta1</lanterna.version>
