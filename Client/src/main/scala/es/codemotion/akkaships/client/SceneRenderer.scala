@@ -1,5 +1,6 @@
 package es.codemotion.akkaships.client
 
+import com.googlecode.lanterna.TextColor
 import com.googlecode.lanterna.TextColor.{RGB, ANSI}
 import com.googlecode.lanterna.input._
 import com.googlecode.lanterna.terminal.{DefaultTerminalFactory, Terminal}
@@ -10,6 +11,24 @@ object SceneRenderer {
   trait Command
   case class MoveCursor(delta: Position) extends Command
   case object HideCursor extends Command
+  case object Fire extends Command
+
+  //Customize board colours and symbols here.
+  val defaultFgColor = ANSI.WHITE
+  val defaultBgColor = ANSI.BLUE
+
+  case class ThemeColor(fore: TextColor = defaultFgColor, back: TextColor = defaultBgColor)
+  case class ThemeFeature(hitColor: ThemeColor = ThemeColor(), neutralColor: ThemeColor = ThemeColor(),
+                          hitChar: Char = ' ', neutralChar: Char = ' ')
+
+  object Theme {
+    val water = ThemeFeature(hitChar = '~')
+    val boat = ThemeFeature(ThemeColor(ANSI.YELLOW, ANSI.RED), ThemeColor(ANSI.BLACK, ANSI.WHITE), '#', '#')
+    val wreck = ThemeFeature(ThemeColor(fore = ANSI.BLACK), ThemeColor(fore = ANSI.BLACK), '#', '#')
+
+    val textColor = ThemeColor(back = ANSI.BLACK)
+  }
+
 }
 
 class SceneRenderer(val size: Size) {
@@ -22,28 +41,47 @@ class SceneRenderer(val size: Size) {
     factory.createTerminal()
   }
 
-
   def clearBoard(refresh: Boolean = true): Unit = {
     term.clearScreen()
     term.setCursorVisible(false)
-    for(i <- 1 to size.n; j <- 1 to size.m) {
+    for(i <- 0 until size.n; j <- 0 until size.m) {
       term.setCursorPosition(j, i)
-      term.setBackgroundColor(ANSI.BLUE)
+      term.setBackgroundColor(defaultBgColor)
       term.putCharacter(' ')
     }
     if(refresh) term.flush()
   }
 
+  def showMessage(msg: String): Unit = {
+    term.setCursorVisible(false)
+    for(j <- 0 until Math.min(size.m, msg.length)) {
+      term.setBackgroundColor(Theme.textColor.back)
+      term.setForegroundColor(Theme.textColor.fore)
+      term.setCursorPosition(j, size.n)
+      term.putCharacter(msg(j))
+    }
+  }
+
+  def clearMessage: Unit = showMessage(" "*size.m)
+
   def paintBoard(elements: Seq[BoardEntity], cursor: Option[Position] = None): Unit = {
     val shotPositionSet = elements collect { case Shot(pos) => pos }
     val ships: Seq[Ship] = elements collect { case s: Ship => s }
     clearBoard(false)
+    shotPositionSet foreach { pos =>
+      term.setCursorPosition(pos.x, pos.y)
+      term.setBackgroundColor(Theme.water.hitColor.back)
+      term.setForegroundColor(Theme.water.hitColor.fore)
+      term.putCharacter(Theme.water.hitChar)
+    }
     for(ship <- ships; pos <- ship) {
       term.setCursorPosition(pos.x, pos.y)
       val (c, fcolor, bcolor) = ship match {
-        case Ship(_, _, _, true) => ('*', new RGB(5, 5, 5), ANSI.BLUE)
-        case _: Ship if shotPositionSet contains pos => ('#', ANSI.YELLOW, ANSI.RED)
-        case _ => ('#', ANSI.BLACK, ANSI.WHITE)
+        case Ship(_, _, _, true) => (Theme.wreck.hitChar, Theme.wreck.hitColor.fore, Theme.wreck.hitColor.back)
+        case _: Ship if shotPositionSet contains pos =>
+          (Theme.boat.hitChar, Theme.boat.hitColor.fore, Theme.boat.hitColor.back)
+        case _ =>
+          (Theme.boat.neutralChar, Theme.boat.neutralColor.fore, Theme.boat.neutralColor.back)
       }
       term.setForegroundColor(fcolor)
       term.setBackgroundColor(bcolor)
@@ -89,6 +127,7 @@ class SceneRenderer(val size: Size) {
         }
         MoveCursor(pos)
       case (KeyType.Escape, _) => HideCursor
+      case (KeyType.Enter, _) => Fire
     } toSet
   }
 }
