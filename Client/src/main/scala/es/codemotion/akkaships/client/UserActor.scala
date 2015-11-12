@@ -66,6 +66,7 @@ class UserActor(gameServer: ActorRef, scene: SceneRenderer) extends Actor {
 
   override def preStart(): Unit = {
     super.preStart()
+    // Sincronizacion para que cada lapso de tiempo se refresque el estado con lo que se inserta por teclado
     syncSched = Some(context.system.scheduler.schedule(inputPollPeriod, inputPollPeriod, self, SyncInput)(
       context.system.dispatcher
     ))

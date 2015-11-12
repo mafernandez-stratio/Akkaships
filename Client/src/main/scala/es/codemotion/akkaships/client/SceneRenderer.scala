@@ -1,7 +1,7 @@
 package es.codemotion.akkaships.client
 
 import com.googlecode.lanterna.TextColor
-import com.googlecode.lanterna.TextColor.{RGB, ANSI}
+import com.googlecode.lanterna.TextColor.ANSI
 import com.googlecode.lanterna.input._
 import com.googlecode.lanterna.terminal.{DefaultTerminalFactory, Terminal}
 
@@ -24,7 +24,7 @@ object SceneRenderer {
   object Theme {
     val water = ThemeFeature(hitChar = '~')
     val boat = ThemeFeature(ThemeColor(ANSI.YELLOW, ANSI.RED), ThemeColor(ANSI.BLACK, ANSI.WHITE), '#', '#')
-    val wreck = ThemeFeature(ThemeColor(fore = ANSI.BLACK), ThemeColor(fore = ANSI.BLACK), '#', '#')
+    val wreck = ThemeFeature(ThemeColor(fore = ANSI.BLACK), ThemeColor(fore = ANSI.BLACK), '*', '*')
 
     val textColor = ThemeColor(back = ANSI.BLACK)
   }
@@ -37,7 +37,7 @@ class SceneRenderer(val size: Size) {
 
   val term: Terminal = {
     val factory = new DefaultTerminalFactory()
-    factory.setSuppressSwingTerminalFrame(true)
+    factory.setSuppressSwingTerminalFrame(false)
     factory.createTerminal()
   }
 
@@ -88,7 +88,7 @@ class SceneRenderer(val size: Size) {
       term.putCharacter(c)
     }
     term.setCursorVisible(false)
-    cursor.foreach(moveCursor(_))
+    cursor.foreach(moveCursor)
     term.flush()
   }
 

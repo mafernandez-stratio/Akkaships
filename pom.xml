@@ -39,7 +39,7 @@
     <properties>
         <scala.binary.version>2.11</scala.binary.version>
         <scala.version>2.11.7</scala.version>
-        <akka.version>2.4.0</akka.version>
+        <akka.version>2.3.11</akka.version>
     </properties>
 
     <dependencies>
