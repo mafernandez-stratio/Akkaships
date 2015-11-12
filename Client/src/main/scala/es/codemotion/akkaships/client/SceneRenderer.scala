@@ -54,15 +54,15 @@ class SceneRenderer(val size: Size) {
 
   def showMessage(msg: String): Unit = {
     term.setCursorVisible(false)
-    for(j <- 0 until Math.min(size.m, msg.length)) {
+    for(j <- 0 until size.m) {
       term.setBackgroundColor(Theme.textColor.back)
       term.setForegroundColor(Theme.textColor.fore)
       term.setCursorPosition(j, size.n)
-      term.putCharacter(msg(j))
+      term.putCharacter(if(j < msg.length) msg(j) else ' ')
     }
   }
 
-  def clearMessage: Unit = showMessage(" "*size.m)
+  def clearMessage: Unit = showMessage("")
 
   def paintBoard(elements: Seq[BoardEntity], cursor: Option[Position] = None): Unit = {
     val shotPositionSet = elements collect { case Shot(pos) => pos }
