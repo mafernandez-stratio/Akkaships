@@ -7,6 +7,7 @@ import com.googlecode.lanterna.terminal.{DefaultTerminalFactory, Terminal}
 
 import es.codemotion.akkaships.common.domain._
 
+
 object SceneRenderer {
   trait Command
   case class MoveCursor(delta: Position) extends Command
@@ -37,7 +38,7 @@ class SceneRenderer(val size: Size) {
 
   val term: Terminal = {
     val factory = new DefaultTerminalFactory()
-    factory.setSuppressSwingTerminalFrame(false)
+    factory.setSuppressSwingTerminalFrame(true)
     factory.createTerminal()
   }
 

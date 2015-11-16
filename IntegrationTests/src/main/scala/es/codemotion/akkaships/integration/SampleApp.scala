@@ -4,6 +4,7 @@ import akka.actor.{Props, Actor, ActorSystem}
 import es.codemotion.akkaships.client.UserActor
 import es.codemotion.akkaships.client.UserActor.{ShowTextMessage, BoardUpdate}
 import es.codemotion.akkaships.common.domain._
+import es.codemotion.akkaships.server.actors.Ship
 
 class DummyServer extends Actor {
   override def receive: Receive = {

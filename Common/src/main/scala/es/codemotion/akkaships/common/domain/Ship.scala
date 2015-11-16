@@ -1,5 +1,9 @@
 package es.codemotion.akkaships.common.domain
 
+import akka.actor.{Props, Actor}
+import akka.routing.{BroadcastRoutingLogic, Router, ActorRefRoutee}
+import es.codemotion.akkaships.common.domain.Ship.SIterator
+
 case object Ship {
   class SIterator(val ship: Ship) extends Iterator[Position] {
 
@@ -22,8 +26,10 @@ case object Ship {
 }
 
 case class Ship(override val pos: Position, orientation: Orientation, length: Int,
-                sunk: Boolean = false) extends BoardEntity(pos) with Iterable[Position] {
-  import es.codemotion.akkaships.common.domain.Ship._
+                sunk: Boolean = false) extends BoardEntity(pos)
+                with Actor  with Iterable[Position] {
+
+
   override def iterator: Iterator[Position] = new SIterator(this)
 
   // Cada barco responde si el disparo que se ha efectuado le ha tocado
@@ -31,5 +37,16 @@ case class Ship(override val pos: Position, orientation: Orientation, length: In
     (orientation == Horizontal && pos.i == hitPos.i && pos.j <= hitPos.j && hitPos.j < pos.j+length) ||
       (orientation == Vertical && pos.j == hitPos.j && pos.i <= hitPos.i && hitPos.i < pos.i+length)
   }
+  def receive: Receive = {
+
+   case any =>
+
+
+  }
 
 }
+
+
+
+
+
