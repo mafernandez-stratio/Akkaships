@@ -1,8 +1,8 @@
 package es.codemotion.akkaships.integration
 
-import akka.actor.{Props, Actor, ActorSystem}
+import akka.actor.{Actor, ActorSystem, Props}
 import es.codemotion.akkaships.client.UserActor
-import es.codemotion.akkaships.client.UserActor.{ShowTextMessage, BoardUpdate}
+import es.codemotion.akkaships.client.UserActor.ShowTextMessage
 import es.codemotion.akkaships.common.domain._
 
 class DummyServer extends Actor {
