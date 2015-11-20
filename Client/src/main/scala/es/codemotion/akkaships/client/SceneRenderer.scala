@@ -35,6 +35,7 @@ class SceneRenderer(val size: Size) {
 
   import SceneRenderer._
 
+
   val term: Terminal = {
     val factory = new DefaultTerminalFactory()
     factory.setSuppressSwingTerminalFrame(false)
@@ -130,4 +131,5 @@ class SceneRenderer(val size: Size) {
       case (KeyType.Enter, _) => Fire
     } toSet
   }
+  clearBoard()
 }

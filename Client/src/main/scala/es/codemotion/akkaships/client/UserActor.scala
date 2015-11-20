@@ -13,7 +13,7 @@ import akka.actor._
 object UserActor {
 
 
-  def props(gameSrv: ActorRef): Props = Props(new UserActor(gameSrv,
+  def props(gameSrv: ActorSelection): Props = Props(new UserActor(gameSrv,
     new SceneRenderer(Size(20,50))))
 
   //Messages
@@ -30,7 +30,7 @@ object UserActor {
 
 }
 
-class UserActor(gameServer: ActorRef,  scene: SceneRenderer) extends Actor with ActorLogging{
+class UserActor(gameServer: ActorSelection,  scene: SceneRenderer) extends Actor with ActorLogging{
 
   val inputPollPeriod = 150 milliseconds
   var syncSched: Option[Cancellable] = None
@@ -39,7 +39,9 @@ class UserActor(gameServer: ActorRef,  scene: SceneRenderer) extends Actor with 
   import UserActor._
 
   def behaviour(st: State = initialState(scene.size)): Receive = {
-    case BoardUpdate(els) => scene.paintBoard(els, st.cursor)
+    case BoardUpdate(els) => {
+      scene.paintBoard(els, st.cursor)
+    }
     case SyncInput =>
       val commands = scene.getCommands
       if (commands contains HideCursor) {
@@ -54,12 +56,13 @@ class UserActor(gameServer: ActorRef,  scene: SceneRenderer) extends Actor with 
               st
           } getOrElse st
         case Fire =>
-          st.cursor foreach (gameServer ! Shot(_))
+          println("F*********")
+          st.cursor foreach (pos => gameServer ! Shot(pos))
+          println("F*********")
           st
       } foreach { ns => context.become(behaviour(ns)) }
     case ClearTextArea => scene.clearMessage
     case ShowTextMessage(msg) => scene.showMessage(msg)
-
 
   }
 

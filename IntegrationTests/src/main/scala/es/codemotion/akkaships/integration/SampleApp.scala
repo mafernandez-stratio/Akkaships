@@ -23,6 +23,9 @@ object SampleApp extends App {
     Shot(Position(0,0))::Shot(Position(0,1))::
     Shot(Position(1,0))::Shot(Position(1,1))::Nil
 
+  //val elements = Shot(Position(0,1)):: Nil
+
+
   gui ! BoardUpdate(elements)
 
   system.wait()

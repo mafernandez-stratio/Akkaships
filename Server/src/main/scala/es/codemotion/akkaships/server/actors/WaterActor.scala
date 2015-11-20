@@ -2,7 +2,6 @@ package es.codemotion.akkaships.server.actors
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import es.codemotion.akkaships.common.domain.{Position, Shot, Water}
-import es.codemotion.akkaships.server.actors.BoardActor
 
 object WaterActor {
   def props(pos: Seq[Position]): Props = Props(new WaterActor(pos))
@@ -15,7 +14,8 @@ class WaterActor( val pos: Seq[Position]) extends Actor with ActorLogging {
       log.info("Shot received from {}", sender.toString())
       if (pos.contains(s))
         boardActor ! Water(s)
-    case _ =>log.info("Unknown message")
+
+    case x =>log.info(s"Unknown message:     ${x}       --------->" + self.path)
   }
 
 

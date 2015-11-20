@@ -28,7 +28,7 @@ class Server extends Daemon with ServerConfig {
 
     val routees = Vector[String]("/user/Portaviones", "/user/Lancha", "/user/Agua")
 
-    system.actorOf(BroadcastGroup(routees).props())
+    system.actorOf(BroadcastGroup(routees).props(),"server")
     system.actorOf(Props(new BoardActor))
 
     logger.info("Akka Ship Server Started")
