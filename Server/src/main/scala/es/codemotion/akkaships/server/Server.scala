@@ -19,17 +19,18 @@ class Server extends Daemon with ServerConfig {
 
   override def start(): Unit = {
 
-    val a1 = system.actorOf(Props(new ShipActor(Ship(Position(1,1),Vertical,4))), "Portaviones")
+    val boardActor=system.actorOf(Props(new BoardActor(2)),"boardActor")
+    val a1 = system.actorOf(Props(new ShipActor(Ship(Position(1,1),Vertical,4),boardActor)), "Portaviones")
 
-    val a2 = system.actorOf(Props(new ShipActor(Ship(Position(15,3),Horizontal,2))),"Lancha")
+    val a2 = system.actorOf(Props(new ShipActor(Ship(Position(3,3),Horizontal,2),boardActor)),"Lancha")
 
-    val aguas= List(Position(1,2),Position(1,3),Position(1,4))
-    val a3 = system.actorOf(Props(new WaterActor(aguas)),"Agua")
+    val aguas= List(Position(8,8),Position(8,9),Position(8,12))
+    val a3 = system.actorOf(Props(new WaterActor(aguas,boardActor)),"Agua")
 
     val routees = Vector[String]("/user/Portaviones", "/user/Lancha", "/user/Agua")
 
     system.actorOf(BroadcastGroup(routees).props(),"server")
-    system.actorOf(Props(new BoardActor))
+
 
     logger.info("Akka Ship Server Started")
   }

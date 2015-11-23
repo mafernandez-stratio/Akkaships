@@ -4,11 +4,11 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import es.codemotion.akkaships.common.domain.{Position, Shot, Water}
 
 object WaterActor {
-  def props(pos: Seq[Position]): Props = Props(new WaterActor(pos))
+  def props(pos: Seq[Position],boardActor:ActorRef): Props = Props(new WaterActor(pos,boardActor))
 }
 
-class WaterActor( val pos: Seq[Position]) extends Actor with ActorLogging {
-  val boardActor:ActorRef=context.system.actorOf(Props(new BoardActor))
+class WaterActor( val pos: Seq[Position],boardActor:ActorRef)  extends Actor with ActorLogging {
+  //val boardActor:ActorRef=context.system.actorOf(Props(new BoardActor))
   def receive = {
     case Shot(s) =>
       log.info("Shot received from {}", sender.toString())

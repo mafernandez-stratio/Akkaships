@@ -71,9 +71,9 @@ class SceneRenderer(val size: Size) {
     clearBoard(false)
     shotPositionSet foreach { pos =>
       term.setCursorPosition(pos.x, pos.y)
-      term.setBackgroundColor(Theme.water.hitColor.back)
-      term.setForegroundColor(Theme.water.hitColor.fore)
-      term.putCharacter(Theme.water.hitChar)
+      term.setBackgroundColor(Theme.boat.hitColor.back)
+      term.setForegroundColor(Theme.boat.hitColor.fore)
+      term.putCharacter(Theme.boat.hitChar)
     }
     for(ship <- ships; pos <- ship) {
       term.setCursorPosition(pos.x, pos.y)

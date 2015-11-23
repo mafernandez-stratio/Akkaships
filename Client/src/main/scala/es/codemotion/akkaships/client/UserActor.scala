@@ -40,8 +40,10 @@ class UserActor(gameServer: ActorSelection,  scene: SceneRenderer) extends Actor
 
   def behaviour(st: State = initialState(scene.size)): Receive = {
     case BoardUpdate(els) => {
+
       scene.paintBoard(els, st.cursor)
     }
+    case FinishBattle => scene.showMessage("PARTIDA FINALIZADA!!!")
     case SyncInput =>
       val commands = scene.getCommands
       if (commands contains HideCursor) {
@@ -56,13 +58,12 @@ class UserActor(gameServer: ActorSelection,  scene: SceneRenderer) extends Actor
               st
           } getOrElse st
         case Fire =>
-          println("F*********")
           st.cursor foreach (pos => gameServer ! Shot(pos))
-          println("F*********")
           st
       } foreach { ns => context.become(behaviour(ns)) }
     case ClearTextArea => scene.clearMessage
     case ShowTextMessage(msg) => scene.showMessage(msg)
+    case SunkMessage(msg)=> scene.showMessage(msg)
 
   }
 

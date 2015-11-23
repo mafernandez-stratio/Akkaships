@@ -24,5 +24,5 @@ case class Size(n: Int, m: Int) extends Vect {
 }
 
 trait Orientation
-object Vertical extends Orientation
-object Horizontal extends Orientation
+case object Vertical extends Orientation
+case object Horizontal extends Orientation
