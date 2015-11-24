@@ -13,8 +13,7 @@ import akka.actor._
 object UserActor {
 
 
-  def props(gameSrv: ActorSelection): Props = Props(new UserActor(gameSrv,
-    new SceneRenderer(Size(20,50))))
+  def props(gameSrv: ActorSelection): Props = Props(new UserActor(gameSrv,new SceneRenderer(Size(20,50))))
 
   //Messages
 
@@ -30,7 +29,8 @@ object UserActor {
 
 }
 
-class UserActor(gameServer: ActorSelection,  scene: SceneRenderer) extends Actor with ActorLogging{
+class UserActor(gameServer: ActorSelection, scene: SceneRenderer) extends Actor with
+ActorLogging{
 
   val inputPollPeriod = 150 milliseconds
   var syncSched: Option[Cancellable] = None
@@ -43,7 +43,8 @@ class UserActor(gameServer: ActorSelection,  scene: SceneRenderer) extends Actor
 
       scene.paintBoard(els, st.cursor)
     }
-    case FinishBattle => scene.showMessage("PARTIDA FINALIZADA!!!")
+    case FinishBattle =>
+      scene.showMessage("PARTIDA FINALIZADA!!!")
     case SyncInput =>
       val commands = scene.getCommands
       if (commands contains HideCursor) {
@@ -64,7 +65,8 @@ class UserActor(gameServer: ActorSelection,  scene: SceneRenderer) extends Actor
     case ClearTextArea => scene.clearMessage
     case ShowTextMessage(msg) => scene.showMessage(msg)
     case SunkMessage(msg)=> scene.showMessage(msg)
-
+    case ScoreResult(results)=>
+      scene.showScore(results)
   }
 
   override def receive: Receive = behaviour(initialState(scene.size))
