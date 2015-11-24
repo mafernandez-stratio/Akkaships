@@ -1,28 +1,31 @@
 package es.codemotion.akkaships.client
 
-import akka.cluster.Cluster
-import akka.cluster.ClusterEvent._
-import es.codemotion.akkaships.client.SceneRenderer.{Fire, MoveCursor, HideCursor}
-import es.codemotion.akkaships.common.domain._
-
-
-import scala.concurrent.duration._
+import java.io.File
+import javax.sound.midi.MidiSystem
 
 import akka.actor._
+import akka.cluster.Cluster
+import akka.cluster.ClusterEvent._
+import es.codemotion.akkaships.client.SceneRenderer.{Fire, HideCursor, MoveCursor}
+import es.codemotion.akkaships.common.domain._
+
+import scala.concurrent.duration._
 
 object UserActor {
 
 
-  def props(gameSrv: ActorSelection): Props = Props(new UserActor(gameSrv,new SceneRenderer(Size(20,50))))
+  def props(gameSrv: ActorSelection): Props = Props(new UserActor(gameSrv, new SceneRenderer(Size(20, 50))))
 
   //Messages
 
   case object SyncInput
+
   case class ShowTextMessage(msg: String)
+
   case object ClearTextArea
 
   case class State(cursor: Option[Position], boardSize: Size) {
-    def isValid: Boolean = cursor forall(boardSize contains _)
+    def isValid: Boolean = cursor forall (boardSize contains _)
   }
 
   def initialState(boardSize: Size) = State(None, boardSize)
@@ -30,11 +33,13 @@ object UserActor {
 }
 
 class UserActor(gameServer: ActorSelection, scene: SceneRenderer) extends Actor with
-ActorLogging{
+ActorLogging {
 
   val inputPollPeriod = 150 milliseconds
   var syncSched: Option[Cancellable] = None
   val cluster = Cluster(context.system)
+
+  //music
 
   import UserActor._
 
@@ -64,8 +69,8 @@ ActorLogging{
       } foreach { ns => context.become(behaviour(ns)) }
     case ClearTextArea => scene.clearMessage
     case ShowTextMessage(msg) => scene.showMessage(msg)
-    case SunkMessage(msg)=> scene.showMessage(msg)
-    case ScoreResult(results)=>
+    case SunkMessage(msg) => scene.showMessage(msg)
+    case ScoreResult(results) =>
       scene.showScore(results)
   }
 
@@ -85,6 +90,17 @@ ActorLogging{
     syncSched = Some(context.system.scheduler.schedule(inputPollPeriod, inputPollPeriod, self, SyncInput)(
       context.system.dispatcher
     ))
+  }
+
+
+  def music(): Unit = {
+    val midiFile = new File("/home/jjlopez/Others/Codemotion/Akkaships/Client/src/main/resources/valkiria.mid");
+    val song = MidiSystem.getSequence(midiFile);
+    val midiPlayer = MidiSystem.getSequencer();
+    midiPlayer.open();
+    midiPlayer.setSequence(song);
+    midiPlayer.setLoopCount(1); // repeat 0 times (play once)
+    midiPlayer.start();
   }
 
 }
