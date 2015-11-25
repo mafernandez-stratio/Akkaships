@@ -39,7 +39,7 @@ ActorLogging {
   var syncSched: Option[Cancellable] = None
   val cluster = Cluster(context.system)
 
-  //music("valkiria.mid")
+  music("valkiria.mid")
 
   import UserActor._
 
@@ -64,7 +64,7 @@ ActorLogging {
               st
           } getOrElse st
         case Fire =>
-          //music("Gun_Shot.mid")
+          music("Gun_Shot.mid")
           st.cursor foreach (pos => gameServer ! Shot(pos))
           st
       } foreach { ns => context.become(behaviour(ns)) }
@@ -72,10 +72,10 @@ ActorLogging {
     case ShowTextMessage(msg) => scene.showMessage(msg)
     case SunkMessage(msg) =>
       scene.showMessage(msg)
-      //music("bomb.mid")
+    music("bomb.mid")
     case ScoreResult(results) =>
       scene.showScore(results)
-      //music("Complete.mid")
+    music("Complete.mid")
   }
 
   override def receive: Receive = behaviour(initialState(scene.size))

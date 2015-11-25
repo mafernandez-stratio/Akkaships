@@ -36,8 +36,10 @@ class Player(properties: java.util.Map[String, ConfigValue]) {
     if (logger.isDebugEnabled) {
       system.logConfiguration()
     }
+    //val clusterClientActor = system.actorSelection("akka.tcp://ShipsServerCluster@127.0.0.1:61000/user/server")
 
-    val clusterClientActor = system.actorSelection(s"${Player.config.getList(PlayerConfig.ServerNode)}/user/server")
+    val serverNode=s"${Player.config.getStringList(PlayerConfig.ServerNode)(0)}/user/server"
+    val clusterClientActor = system.actorSelection(serverNode)
     system.actorOf(UserActor.props(clusterClientActor), "playerActor")
 
   }
