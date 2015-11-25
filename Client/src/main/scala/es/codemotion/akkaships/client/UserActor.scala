@@ -1,7 +1,7 @@
 package es.codemotion.akkaships.client
 
 import java.io.File
-import javax.sound.midi.MidiSystem
+import javax.sound.midi.{Sequencer, MidiSystem}
 
 import akka.actor._
 import akka.cluster.Cluster
@@ -39,7 +39,7 @@ ActorLogging {
   var syncSched: Option[Cancellable] = None
   val cluster = Cluster(context.system)
 
-  music("valkiria.mid")
+  val backmusic=music("valkiria2.mid")
 
   import UserActor._
 
@@ -72,10 +72,11 @@ ActorLogging {
     case ShowTextMessage(msg) => scene.showMessage(msg)
     case SunkMessage(msg) =>
       scene.showMessage(msg)
-    music("bomb.mid")
+      music("bomb.mid")
     case ScoreResult(results) =>
       scene.showScore(results)
-    music("Complete.mid")
+      backmusic.stop()
+      music("Complete.mid")
   }
 
   override def receive: Receive = behaviour(initialState(scene.size))
@@ -97,7 +98,7 @@ ActorLogging {
   }
 
 
-  def music(midi : String): Unit = {
+  def music(midi : String): Sequencer = {
     val url = getClass.getResource(s"/$midi")
     val midiFile = new File(url.getPath)
     val song = MidiSystem.getSequence(midiFile)
@@ -106,6 +107,7 @@ ActorLogging {
     midiPlayer.setSequence(song)
     midiPlayer.setLoopCount(0) // repeat 0 times (play once)
     midiPlayer.start()
+    midiPlayer
   }
 
 }
