@@ -39,7 +39,7 @@ ActorLogging {
   var syncSched: Option[Cancellable] = None
   val cluster = Cluster(context.system)
 
-  //music
+  music
 
   import UserActor._
 
