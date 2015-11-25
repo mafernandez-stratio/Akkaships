@@ -20,10 +20,11 @@ class BoardActor(val shipsNumber:Int, val statisticsActor:ActorRef) extends Acto
     case Ship(pos, orientation, length, sunk) =>
       sunks += 1
       if (sunks == shipsNumber) {
+        statisticsActor ! Score
         if (playersAlive.nonEmpty)
           playersAlive.foreach(member => context.actorSelection(RootActorPath(member.address) / "user" / "playerActor")
             ! FinishBattle)
-        statisticsActor ! Score
+
       }
 
     case Shot(pos) =>

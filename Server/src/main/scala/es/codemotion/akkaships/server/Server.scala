@@ -26,15 +26,20 @@ class Server extends Daemon with ServerConfig {
     val statisticsRouter: ActorRef =
       system.actorOf(RoundRobinPool(5).props(Props[StatisticsActor]), "statisticRouter")
 
-    val a1 = system.actorOf(Props(new ShipActor(Ship(Position(1,1),Vertical,4),boardActor,statisticsRouter)),
-      "Portaviones")
+    val a1 = system.actorOf(Props(new ShipActor(Ship(Position(1,2),Vertical,4),boardActor,statisticsRouter)),
+      "Portaviones1")
 
-    val a2 = system.actorOf(Props(new ShipActor(Ship(Position(3,3),Horizontal,2),boardActor,statisticsRouter)),"Lancha")
+    val a2 = system.actorOf(Props(new ShipActor(Ship(Position(3,4),Horizontal,3),boardActor,statisticsRouter)),"Lancha")
 
-    val aguas= List(Position(8,8),Position(8,9),Position(8,12))
-    val a3 = system.actorOf(Props(new WaterActor(aguas,boardActor,statisticsRouter)),"Agua")
+    val a3 = system.actorOf(Props(new ShipActor(Ship(Position(15,5),Vertical,4),boardActor,statisticsRouter)),
+      "Portaviones2")
+    val a4 = system.actorOf(Props(new ShipActor(Ship(Position(7,20),Horizontal,4),boardActor,statisticsRouter)),
+      "Portaviones3")
 
-    val routees = Vector[String]("/user/Portaviones", "/user/Lancha", "/user/Agua")
+    //val aguas= List(Position(8,8),Position(8,9),Position(8,12))
+    //val a3 = system.actorOf(Props(new WaterActor(boardActor,statisticsRouter)),"Agua")
+
+    val routees = Vector[String]("/user/Portaviones1", "/user/Lancha", "/user/Portaviones2", "/user/Portaviones3")
 
     system.actorOf(BroadcastGroup(routees).props(),"server")
 

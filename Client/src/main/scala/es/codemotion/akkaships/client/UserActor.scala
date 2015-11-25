@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 object UserActor {
 
 
-  def props(gameSrv: ActorSelection): Props = Props(new UserActor(gameSrv, new SceneRenderer(Size(20, 50))))
+  def props(gameSrv: ActorSelection): Props = Props(new UserActor(gameSrv, new SceneRenderer(Size(20, 25))))
 
   //Messages
 
