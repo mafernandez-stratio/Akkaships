@@ -22,7 +22,7 @@ class Server extends Daemon with ServerConfig {
 
 
     val statisticsActor=system.actorOf(Props(new StatisticsActor()))
-    val boardActor=system.actorOf(Props(new BoardActor(2,statisticsActor)),"boardActor")
+    val boardActor=system.actorOf(Props(new BoardActor(3,statisticsActor)),"boardActor")
     val statisticsRouter: ActorRef =
       system.actorOf(RoundRobinPool(5).props(Props[StatisticsActor]), "statisticRouter")
 
