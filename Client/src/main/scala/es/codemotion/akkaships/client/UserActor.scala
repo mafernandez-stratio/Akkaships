@@ -39,7 +39,7 @@ ActorLogging {
   var syncSched: Option[Cancellable] = None
   val cluster = Cluster(context.system)
 
-  music
+  //music("valkiria.mid")
 
   import UserActor._
 
@@ -64,14 +64,18 @@ ActorLogging {
               st
           } getOrElse st
         case Fire =>
+          //music("Gun_Shot.mid")
           st.cursor foreach (pos => gameServer ! Shot(pos))
           st
       } foreach { ns => context.become(behaviour(ns)) }
     case ClearTextArea => scene.clearMessage
     case ShowTextMessage(msg) => scene.showMessage(msg)
-    case SunkMessage(msg) => scene.showMessage(msg)
+    case SunkMessage(msg) =>
+      scene.showMessage(msg)
+      //music("bomb.mid")
     case ScoreResult(results) =>
       scene.showScore(results)
+      //music("Complete.mid")
   }
 
   override def receive: Receive = behaviour(initialState(scene.size))
@@ -93,14 +97,15 @@ ActorLogging {
   }
 
 
-  def music(): Unit = {
-    val midiFile = new File("/home/jjlopez/Others/Codemotion/Akkaships/Client/src/main/resources/valkiria.mid");
-    val song = MidiSystem.getSequence(midiFile);
-    val midiPlayer = MidiSystem.getSequencer();
-    midiPlayer.open();
-    midiPlayer.setSequence(song);
-    midiPlayer.setLoopCount(1); // repeat 0 times (play once)
-    midiPlayer.start();
+  def music(midi : String): Unit = {
+    val url = getClass.getResource(s"/$midi")
+    val midiFile = new File(url.getPath)
+    val song = MidiSystem.getSequence(midiFile)
+    val midiPlayer = MidiSystem.getSequencer()
+    midiPlayer.open()
+    midiPlayer.setSequence(song)
+    midiPlayer.setLoopCount(0) // repeat 0 times (play once)
+    midiPlayer.start()
   }
 
 }

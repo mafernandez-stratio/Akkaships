@@ -27,6 +27,8 @@ object PlayerConfig {
   val PlayerConfigResource = "external.config.resource"
   val PlayerConfigFile = "external.config.filename"
   val PlayerConfigHosts = "config.cluster.hosts"
+  val ServerNode ="akka.cluster.seed-nodes"
+
 }
 
 trait PlayerConfig {
@@ -41,7 +43,7 @@ trait PlayerConfig {
     val configFile = defaultConfig.getString(PlayerConfigFile)
     val configResource = defaultConfig.getString(PlayerConfigResource)
 
-    //Get the driver-application.conf properties if exists in resources
+    //Get the player-application.conf properties if exists in resources
     val configWithResource: Config = {
       val resource = PlayerConfig.getClass.getClassLoader.getResource(PlayerConfigResource)
       Option(resource).fold {
@@ -60,7 +62,7 @@ trait PlayerConfig {
       }
     }
 
-    //Get the user external driver-application.conf properties if exists
+    //Get the user external player-application.conf properties if exists
     val finalConfig: Config = {
       if(configFile.isEmpty){
         configWithResource

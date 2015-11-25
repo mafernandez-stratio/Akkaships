@@ -10,7 +10,6 @@ import scala.language.postfixOps
 
 object Player extends PlayerConfig{
   override lazy val logger = Logger.getLogger(getClass)
-  val ActorsPath = "/user/players"
 
  def apply(seedNodes: java.util.List[String]) =
     new Player(seedNodes)
@@ -38,7 +37,7 @@ class Player(properties: java.util.Map[String, ConfigValue]) {
       system.logConfiguration()
     }
 
-    val clusterClientActor = system.actorSelection("akka.tcp://ShipsServerCluster@127.0.0.1:61000/user/server")
+    val clusterClientActor = system.actorSelection(s"${Player.config.getList(PlayerConfig.ServerNode)}/user/server")
     system.actorOf(UserActor.props(clusterClientActor), "playerActor")
 
   }

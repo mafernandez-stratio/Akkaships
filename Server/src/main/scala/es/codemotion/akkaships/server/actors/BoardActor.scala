@@ -18,6 +18,7 @@ class BoardActor(val shipsNumber:Int, val statisticsActor:ActorRef) extends Acto
 
   def receive = {
     case Ship(pos, orientation, length, sunk) =>
+
       sunks += 1
       if (sunks == shipsNumber) {
         if (playersAlive.nonEmpty)
@@ -74,5 +75,7 @@ class BoardActor(val shipsNumber:Int, val statisticsActor:ActorRef) extends Acto
     cluster.unsubscribe(self)
     super.postStop()
   }
+
+
 
 }
