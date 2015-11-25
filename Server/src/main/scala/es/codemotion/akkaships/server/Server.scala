@@ -36,8 +36,6 @@ class Server extends Daemon with ServerConfig {
     val a4 = system.actorOf(Props(new ShipActor(Ship(Position(7,20),Horizontal,4),boardActor,statisticsRouter)),
       "Portaviones3")
 
-    //val aguas= List(Position(8,8),Position(8,9),Position(8,12))
-    //val a3 = system.actorOf(Props(new WaterActor(boardActor,statisticsRouter)),"Agua")
 
     val routees = Vector[String]("/user/Portaviones1", "/user/Lancha", "/user/Portaviones2", "/user/Portaviones3")
 

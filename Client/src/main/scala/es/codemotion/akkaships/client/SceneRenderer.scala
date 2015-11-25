@@ -48,7 +48,7 @@ class SceneRenderer(val size: Size) {
 
   lazy val termScore: Terminal = {
     val factory = new DefaultTerminalFactory()
-    factory.setSuppressSwingTerminalFrame(true)
+    factory.setSuppressSwingTerminalFrame(false)
     factory.createTerminal()
   }
 
