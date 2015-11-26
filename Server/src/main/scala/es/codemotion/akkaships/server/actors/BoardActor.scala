@@ -18,12 +18,22 @@ class BoardActor(val shipsNumber:Int, val statisticsActor:ActorRef) extends Acto
 
   def receive = {
 
+    case Ship(pos, orientation, length, sunk) =>  sunks += 1
+
+    case Shot(pos) =>
+      log.info("-------------------> BoardActor gets a shot message")
+      boardElements :::= Shot(pos) :: Nil
+      if (playersAlive.nonEmpty) {
+        /* -----------------------------------------------------------------------------------------------------*/
+        /* --------- ENVIAR A TODOS LOS PLAYERS LA ACTUALIZACION DE ELEMENTOS PARA REFRESCAR SU PANTALLA -------*/
+        /* -----------------------------------------------------------------------------------------------------*/
+      }
+
+
     case MemberUp(member) =>
       if (member.roles.contains("player")) {
         playersAlive :::= member :: Nil
-        /*----------------------------------*/
-        /* MESSAGE TO STATISTIC ACTOR ------*/
-        /*----------------------------------*/
+        statisticsActor ! NewPlayer(member.address.toString)
       }
 
     case UnreachableMember(member) =>
