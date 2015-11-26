@@ -38,9 +38,15 @@ class PlayerInitialize(properties: java.util.Map[String, ConfigValue]) {
       system.logConfiguration()
     }
 
+    //Obtenemos el seed node del server
     val serverNode=s"${PlayerInitialize.config.getStringList(PlayerConfig.ServerNode)(0)}/user/server"
 
-    //Creamos el Player Actor conectado al server
+    //Obtenemos el ActorRef del server
+    val serverActor = system.actorSelection(serverNode)
+
+    //Inicializamos el player Actor
+    system.actorOf(PlayerActor.props(serverActor), "playerActor")
+
 
   }
 
