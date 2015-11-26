@@ -26,11 +26,11 @@ class Server extends Daemon with ServerConfig {
     val statisticsRouter: ActorRef = system.actorOf(RoundRobinPool(5).props(Props[StatisticsActor]), "statisticRouter")
 
     /* Ship Actors  */
-    system.actorOf(Props(new ShipActor(Ship(Position(1, 2), Vertical, 4), boardActor, statisticsRouter)), "Portaviones")
-    system.actorOf(Props(new ShipActor(Ship(Position(10, 10), Horizontal, 2), boardActor, statisticsRouter)),"Lancha")
+    system.actorOf(Props(new ShipActor(Ship(Position(1, 0), Vertical, 4), boardActor, statisticsRouter)), "Portaviones")
+    system.actorOf(Props(new ShipActor(Ship(Position(1, 18), Horizontal, 2), boardActor, statisticsRouter)),"Lancha")
 
     /* Ships Broadcast Router */
-    val routees = Vector[String]("/user/Portaaviones", "/user/Lancha")
+    val routees = Vector[String]("/user/Portaviones", "/user/Lancha")
     system.actorOf(BroadcastGroup(routees).props(), "server")
 
     logger.info("Akka Ship Server Started")
