@@ -18,13 +18,13 @@ class ShipActor(val ship:Ship, val boardActor:ActorRef, val statisticsActor:Acto
         if (!touchedPositions.contains(p)) {
           touched += 1
           touchedPositions:::=p::Nil
-          /*--------------SHOT MESSAGE TO BOARD ACTOR--------------*/
+          boardActor ! Shot(p)
           if (touched == ship.length) {
-            /* -------------- SunkMessage al seder con hundido ---------------*/
-            /* -------------- Ship Message al boardActor con hundido ---------*/
-            /* -------------- Mensaje to statisticsActor ---------------------*/
+            sender ! SunkMessage("HUNDIDO")
+            boardActor ! Ship(ship.pos, ship.orientation, ship.length, true)
+            statisticsActor ! Statistics(sender.path.address.toString,true,true)
           }else{
-            /* -------------- Mensaje to statisticsActor ---------------------*/
+            statisticsActor ! Statistics(sender.path.address.toString,true,false)
           }
         }else{
           statisticsActor ! Statistics(sender.toString(),false,false)

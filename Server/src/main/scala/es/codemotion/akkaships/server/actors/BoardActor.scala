@@ -18,16 +18,24 @@ class BoardActor(val shipsNumber:Int, val statisticsActor:ActorRef) extends Acto
 
   def receive = {
 
-    case Ship(pos, orientation, length, sunk) =>  sunks += 1
+    case Ship(pos, orientation, length, sunk) =>
+      sunks += 1
+      if (sunks == shipsNumber) {
+        /* ------------------------ MENSAJE DE RESULTADOS A STATISTIC ACTOR -------------------------------------*/
+        if (playersAlive.nonEmpty) {
+          /*----------------------- MENSAJE DE FIN DE PARTIDA A TODOS LOS PLAYERS -------------------------------*/
+        }
+      }
 
     case Shot(pos) =>
       log.info("-------------------> BoardActor gets a shot message")
       boardElements :::= Shot(pos) :: Nil
       if (playersAlive.nonEmpty) {
-        /* -----------------------------------------------------------------------------------------------------*/
-        /* --------- ENVIAR A TODOS LOS PLAYERS LA ACTUALIZACION DE ELEMENTOS PARA REFRESCAR SU PANTALLA -------*/
-        /* -----------------------------------------------------------------------------------------------------*/
+        playersAlive.foreach(member => context.actorSelection(RootActorPath(member.address) / "user" / "playerActor")
+          ! BoardUpdate(boardElements))
       }
+
+      /*-----------------IMPLEMENTAR RECIBIR MENSAJE DE SCORE RESULT QUE LLEGA DE STATISTIC ACTOR ----------------*/
 
 
     case MemberUp(member) =>
