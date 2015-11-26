@@ -1,11 +1,12 @@
 package es.codemotion.akkaships.client
 
 import java.io.File
-import javax.sound.midi.{Sequencer, MidiSystem}
+import javax.sound.midi.{MidiSystem, Sequencer}
 
 import akka.actor._
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent._
+import com.sun.media.sound.RealTimeSequencerProvider
 import es.codemotion.akkaships.client.SceneRenderer.{Fire, HideCursor, MoveCursor}
 import es.codemotion.akkaships.common.domain._
 
@@ -17,7 +18,9 @@ object PlayerActor {
 
   //Mensajes Propios del Usuario
   case object SyncInput
+
   case class ShowTextMessage(msg: String)
+
   case object ClearTextArea
 
   case class State(cursor: Option[Position], boardSize: Size) {
@@ -32,6 +35,9 @@ class PlayerActor(gameServer: ActorSelection, scene: SceneRenderer) extends Acto
   val inputPollPeriod = 150 milliseconds
   var syncSched: Option[Cancellable] = None
   val cluster = Cluster(context.system)
+  val sound = true
+
+  val backmusic = music("valkiria2.mid")
 
   import PlayerActor._
 
@@ -54,7 +60,8 @@ class PlayerActor(gameServer: ActorSelection, scene: SceneRenderer) extends Acto
               st
           } getOrElse st
         case Fire =>
-          st.cursor foreach (pos=> gameServer ! Shot(pos))
+          st.cursor foreach (pos => gameServer ! Shot(pos))
+          music("Gun_Shot.mid")
           st
       } foreach { ns => context.become(behaviour(ns)) }
     case ClearTextArea => scene.clearMessage
@@ -63,8 +70,11 @@ class PlayerActor(gameServer: ActorSelection, scene: SceneRenderer) extends Acto
       scene.showMessage("PARTIDA FINALIZADA!!!")
     case SunkMessage(msg) =>
       scene.showMessage(msg)
+      music("bomba.mid")
     case ScoreResult(results) =>
       scene.showScore(results)
+      backmusic.stop()
+      music("Complete.mid")
 
   }
 
@@ -87,16 +97,23 @@ class PlayerActor(gameServer: ActorSelection, scene: SceneRenderer) extends Acto
   }
 
 
-  def music(midi : String): Sequencer = {
-    val url = getClass.getResource(s"/$midi")
-    val midiFile = new File(url.getPath)
-    val song = MidiSystem.getSequence(midiFile)
-    val midiPlayer = MidiSystem.getSequencer()
-    midiPlayer.open()
-    midiPlayer.setSequence(song)
-    midiPlayer.setLoopCount(0) // repeat 0 times (play once)
-    midiPlayer.start()
-    midiPlayer
+  def music(midi: String): Sequencer = {
+    try {
+      val url = getClass.getResource(s"/$midi")
+      val midiFile = new File(url.getPath)
+      val song = MidiSystem.getSequence(midiFile)
+      val midiPlayer = MidiSystem.getSequencer()
+      midiPlayer.open()
+      midiPlayer.setSequence(song)
+      midiPlayer.setLoopCount(0) // repeat 0 times (play once)
+      if (sound) {
+        midiPlayer.start()
+      }
+      midiPlayer
+    }catch{
+      case e:Exception => MidiSystem.getSequencer()
+    }
   }
+
 
 }

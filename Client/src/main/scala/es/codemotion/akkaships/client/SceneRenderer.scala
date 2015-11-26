@@ -42,7 +42,7 @@ class SceneRenderer(val size: Size) {
 
   val term: Terminal = {
     val factory = new DefaultTerminalFactory()
-    factory.setSuppressSwingTerminalFrame(false)
+    factory.setSuppressSwingTerminalFrame(true)
     factory.createTerminal()
   }
 
