@@ -70,7 +70,7 @@ class PlayerActor(gameServer: ActorSelection, scene: SceneRenderer) extends Acto
       scene.showMessage("PARTIDA FINALIZADA!!!")
     case SunkMessage(msg) =>
       scene.showMessage(msg)
-      music("bomba.mid")
+      music("bomb.mid")
     case ScoreResult(results) =>
       scene.showScore(results)
       backmusic.stop()
