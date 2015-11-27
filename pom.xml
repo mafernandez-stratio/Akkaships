@@ -35,6 +35,24 @@
         <module>Client</module>
     </modules>
 
+    <developers>
+        <developer>
+            <id>miguel0afd</id>
+            <name>Miguel Angel Fernandez</name>
+            <email>mafernandez at stratio dot com</email>
+        </developer>
+        <developer>
+            <id>jjlopez</id>
+            <name>Juanjo Lopez</name>
+            <email>jjlopez at stratio dot com</email>
+        </developer>
+        <developer>
+            <id>pfperez</id>
+            <name>Pablo Francisco Perez</name>
+            <email>pfperez at stratio dot com</email>
+        </developer>
+    </developers>
+
     <properties>
         <scala.binary.version>2.10</scala.binary.version>
         <scala.version>2.10.4</scala.version>
