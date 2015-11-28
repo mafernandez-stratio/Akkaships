@@ -1,6 +1,8 @@
 # Akkaships
 Battleship game implemented in Akka. Training project for Codemotion 2015
 
+Slides from the workshop are available at [Slideshare](http://www.slideshare.net/miguel0afd/akkaships-primeros-pasos-con-akka-olvdate-de-los-threads)
+
 ## Requirements ##
 [Apache Cassandra](http://www.apache.org/dyn/closer.lua/cassandra/2.1.11/apache-cassandra-2.1.11-bin.tar.gz)
  
