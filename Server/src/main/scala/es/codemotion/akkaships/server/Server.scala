@@ -1,9 +1,9 @@
 package es.codemotion.akkaships.server
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.routing.BroadcastGroup
+import akka.routing.{BroadcastGroup, RoundRobinPool}
 import es.codemotion.akkaships.common.domain._
-import es.codemotion.akkaships.server.actors.ShipActor
+import es.codemotion.akkaships.server.actors.{BoardActor, ShipActor, StatisticsActor}
 import es.codemotion.akkaships.server.config.ServerConfig
 import org.apache.commons.daemon.{Daemon, DaemonContext}
 import org.apache.log4j.Logger
@@ -19,7 +19,7 @@ class Server extends Daemon with ServerConfig {
 
   override def start(): Unit = {
 
-    val statisticsActor = ???   /* IMPLEMENT system.actorOf */
+    val statisticsActor = system.actorOf(Props(new StatisticsActor()),"statisticsActor")
     val boardActor = system.actorOf(Props(new BoardActor(2, statisticsActor)), "boardActor")
 
     /* Round Robin Router*/
@@ -28,10 +28,10 @@ class Server extends Daemon with ServerConfig {
     /* Ship Actors  */
     system.actorOf(Props(new ShipActor(Ship(Position(1, 2), Vertical, 4), boardActor, statisticsRouter)),
       "Portaaviones")
-    /* ------------CREATE OTHER SHIP ---------------*/
+    system.actorOf(Props(new ShipActor(Ship(Position(10, 10), Horizontal, 2), boardActor, statisticsRouter)),"Lancha")
 
     /* Ships Broadcast Router */
-    val routees = Vector[String]("/user/Portaaviones")
+    val routees = Vector[String]("/user/Portaaviones", "/user/Lancha")
     system.actorOf(BroadcastGroup(routees).props(), "server")
 
     logger.info("Akka Ship Server Started")

@@ -52,7 +52,7 @@
             <email>pfperez at stratio dot com</email>
         </developer>
     </developers>
-
+    
     <properties>
         <scala.binary.version>2.10</scala.binary.version>
         <scala.version>2.10.4</scala.version>

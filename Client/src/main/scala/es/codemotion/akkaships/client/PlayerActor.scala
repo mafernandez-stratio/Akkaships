@@ -54,7 +54,7 @@ class PlayerActor(gameServer: ActorSelection, scene: SceneRenderer) extends Acto
               st
           } getOrElse st
         case Fire =>
-          ???
+          ??? /* ----------------IMPLEMENT SHOT MESSAGE ----------------------*/
       } foreach { ns => context.become(behaviour(ns)) }
     case ClearTextArea => scene.clearMessage
     case ShowTextMessage(msg) => scene.showMessage(msg)
