@@ -4,13 +4,16 @@ import com.googlecode.lanterna.TextColor
 import com.googlecode.lanterna.TextColor.ANSI
 import com.googlecode.lanterna.input._
 import com.googlecode.lanterna.terminal.{DefaultTerminalFactory, Terminal}
-
 import es.codemotion.akkaships.common.domain._
 
 object SceneRenderer {
+
   trait Command
+
   case class MoveCursor(delta: Position) extends Command
+
   case object HideCursor extends Command
+
   case object Fire extends Command
 
   //Customize board colours and symbols here.
@@ -18,6 +21,7 @@ object SceneRenderer {
   val defaultBgColor = ANSI.BLUE
 
   case class ThemeColor(fore: TextColor = defaultFgColor, back: TextColor = defaultBgColor)
+
   case class ThemeFeature(hitColor: ThemeColor = ThemeColor(), neutralColor: ThemeColor = ThemeColor(),
                           hitChar: Char = ' ', neutralChar: Char = ' ')
 
@@ -35,7 +39,14 @@ class SceneRenderer(val size: Size) {
 
   import SceneRenderer._
 
+
   val term: Terminal = {
+    val factory = new DefaultTerminalFactory()
+    factory.setSuppressSwingTerminalFrame(false)
+    factory.createTerminal()
+  }
+
+  lazy val termScore: Terminal = {
     val factory = new DefaultTerminalFactory()
     factory.setSuppressSwingTerminalFrame(false)
     factory.createTerminal()
@@ -44,21 +55,41 @@ class SceneRenderer(val size: Size) {
   def clearBoard(refresh: Boolean = true): Unit = {
     term.clearScreen()
     term.setCursorVisible(false)
-    for(i <- 0 until size.n; j <- 0 until size.m) {
+    for (i <- 0 until size.n; j <- 0 until size.m) {
       term.setCursorPosition(j, i)
       term.setBackgroundColor(defaultBgColor)
       term.putCharacter(' ')
     }
-    if(refresh) term.flush()
+    if (refresh) term.flush()
+    term.setCursorPosition(0, 0)
+    term.setCursorVisible(true)
   }
 
   def showMessage(msg: String): Unit = {
     term.setCursorVisible(false)
-    for(j <- 0 until size.m) {
+    for (j <- 0 until size.m) {
       term.setBackgroundColor(Theme.textColor.back)
       term.setForegroundColor(Theme.textColor.fore)
       term.setCursorPosition(j, size.n)
-      term.putCharacter(if(j < msg.length) msg(j) else ' ')
+      term.putCharacter(if (j < msg.length) msg(j) else ' ')
+    }
+  }
+
+
+  def showScore(msg: String): Unit = {
+    termScore.setCursorVisible(false)
+    var line = 0
+    var pos = 0
+    for (j <- 0 until msg.length) {
+      termScore.setBackgroundColor(Theme.textColor.back)
+      termScore.setForegroundColor(Theme.textColor.fore)
+      if (msg(j) == '\n') {
+        line += 1
+        pos = 0;
+      }
+      termScore.setCursorPosition(pos, line)
+      termScore.putCharacter(msg(j))
+      pos += 1
     }
   }
 
@@ -70,11 +101,11 @@ class SceneRenderer(val size: Size) {
     clearBoard(false)
     shotPositionSet foreach { pos =>
       term.setCursorPosition(pos.x, pos.y)
-      term.setBackgroundColor(Theme.water.hitColor.back)
-      term.setForegroundColor(Theme.water.hitColor.fore)
-      term.putCharacter(Theme.water.hitChar)
+      term.setBackgroundColor(Theme.boat.hitColor.back)
+      term.setForegroundColor(Theme.boat.hitColor.fore)
+      term.putCharacter(Theme.boat.hitChar)
     }
-    for(ship <- ships; pos <- ship) {
+    for (ship <- ships; pos <- ship) {
       term.setCursorPosition(pos.x, pos.y)
       val (c, fcolor, bcolor) = ship match {
         case Ship(_, _, _, true) => (Theme.wreck.hitChar, Theme.wreck.hitColor.fore, Theme.wreck.hitColor.back)
@@ -94,7 +125,7 @@ class SceneRenderer(val size: Size) {
 
   def moveCursor(pos: Position): Unit = {
     val visible = size contains pos
-    if(visible) term.setCursorPosition(pos.x, pos.y)
+    if (visible) term.setCursorPosition(pos.x, pos.y)
     term.setCursorVisible(visible)
   }
 
@@ -103,11 +134,17 @@ class SceneRenderer(val size: Size) {
   def getCommands: Set[Command] = {
     val pollIt = new Iterator[KeyStroke] {
       private var buff: Option[KeyStroke] = None
-      override def hasNext: Boolean = { if(buff.isEmpty) buff = Option(term.pollInput); buff.isDefined }
-      override def next(): KeyStroke = if(hasNext) { val r = buff.get; buff = None; r} else throw new NoSuchElementException
+
+      override def hasNext: Boolean = {
+        if (buff.isEmpty) buff = Option(term.pollInput); buff.isDefined
+      }
+
+      override def next(): KeyStroke = if (hasNext) {
+        val r = buff.get; buff = None; r
+      } else throw new NoSuchElementException
     }
     val strokesByType: Map[KeyType, List[KeyStroke]] = pollIt.toList.groupBy { key =>
-      if(
+      if (
         Set(KeyType.ArrowUp, KeyType.ArrowDown,
           KeyType.ArrowLeft, KeyType.ArrowRight
         ) contains key.getKeyType) KeyType.ArrowUp
@@ -115,7 +152,7 @@ class SceneRenderer(val size: Size) {
     }
     strokesByType collect {
       case (KeyType.ArrowUp, keys) =>
-        val pos = (Position(0,0) /: keys) {
+        val pos = (Position(0, 0) /: keys) {
           case (prev, key: KeyStroke) => prev + {
             key.getKeyType match {
               case KeyType.ArrowUp => Position(-1, 0)
@@ -130,4 +167,6 @@ class SceneRenderer(val size: Size) {
       case (KeyType.Enter, _) => Fire
     } toSet
   }
+
+  clearBoard()
 }

@@ -19,10 +19,12 @@ case object Ship {
     private val expansion: Position => Position =
       if(ship.orientation == Horizontal) horizontalExpansion else verticalExpansion
   }
+
 }
 
 case class Ship(override val pos: Position, orientation: Orientation, length: Int,
-                sunk: Boolean = false) extends BoardEntity(pos) with Iterable[Position] {
+                sunk: Boolean = false) extends BoardEntity with Iterable[Position]
+              {
   import es.codemotion.akkaships.common.domain.Ship._
   override def iterator: Iterator[Position] = new SIterator(this)
 

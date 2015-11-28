@@ -1,38 +1,45 @@
 package es.codemotion.akkaships.server
 
-import akka.actor.{Actor, ActorLogging}
-import akka.cluster.Cluster
-import akka.cluster.ClusterEvent._
-import es.codemotion.akkaships.common.domain.{Result, Shot}
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.routing.BroadcastGroup
+import es.codemotion.akkaships.common.domain._
+import es.codemotion.akkaships.server.actors.ShipActor
+import es.codemotion.akkaships.server.config.ServerConfig
+import org.apache.commons.daemon.{Daemon, DaemonContext}
+import org.apache.log4j.Logger
 
-class Server extends Actor with ActorLogging {
+class Server extends Daemon with ServerConfig {
 
-  val cluster = Cluster(context.system)
+  override lazy val logger = Logger.getLogger(classOf[Server])
 
-  // subscribe to cluster changes, re-subscribe when restart
-  override def preStart(): Unit = {
-    //#subscribe
-    cluster.subscribe(self, initialStateMode = InitialStateAsEvents,
-      classOf[MemberEvent], classOf[UnreachableMember])
-    //#subscribe
+  var system = ActorSystem(clusterName, config)
+
+
+  override def init(p1: DaemonContext): Unit = ()
+
+  override def start(): Unit = {
+
+    val statisticsActor = ???
+    val boardActor = ???
+
+    /* Round Robin Router*/
+    val statisticsRouter: ActorRef = ???
+
+    /* Ship Actors  */
+    system.actorOf(Props(new ShipActor(Ship(Position(1, 2), Vertical, 4), boardActor, statisticsRouter)), "Portaviones1")
+    /* ... */
+
+    /* Ships Broadcast Router */
+    val routees = Vector[String]()
+    system.actorOf(BroadcastGroup(routees).props(), "server")
+
+    logger.info("Akka Ship Server Started")
   }
 
-  override
-  def postStop(): Unit = cluster.unsubscribe(self)
-
-  def receive = {
-    case Shot(pos) =>
-      log.info("Shot received from {}", sender.toString())
-      sender ! Result("Well done!")
-    case MemberUp(member) =>
-      log.info("Member is Up: {}", member.address)
-    case UnreachableMember(member) =>
-      log.info("Member detected as unreachable: {}", member)
-    case MemberRemoved(member, previousStatus) =>
-      log.info("Member is Removed: {} after {}",
-        member.address, previousStatus)
-    case me: MemberEvent =>
-      log.info("Unkown member event: {}", me)
+  override def stop(): Unit = {
+    system.shutdown()
+    logger.info("Akka Ship Server Stopped")
   }
 
+  override def destroy(): Unit = ()
 }

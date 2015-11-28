@@ -1,4 +1,6 @@
 package es.codemotion.akkaships.common.domain
 
-abstract class BoardEntity(val pos: Position)
+trait  BoardEntity{
+  val pos: Position
+}
 
