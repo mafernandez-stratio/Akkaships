@@ -19,26 +19,34 @@ class BoardActor(val shipsNumber:Int, val statisticsActor:ActorRef) extends Acto
   def receive = {
 
     case MemberUp(member) =>
-      ???
+      if (member.roles.contains("player")) {
+        playersAlive :::= member :: Nil
+        /*----------------------------------*/
+        /* MESSAGE TO STATISTIC ACTOR ------*/
+        /*----------------------------------*/
+      }
 
     case UnreachableMember(member) =>
-      ???
+      if (member.roles.contains("player"))
+        playersAlive=playersAlive.filter(_!=member)
+
 
     case MemberRemoved(member, previousStatus) =>
-      ???
+      if (member.roles.contains("player"))
+        playersAlive=playersAlive.filter(_!=member)
     case _: MemberEvent => // ignore
 
   }
 
   override def preStart(): Unit = {
     super.preStart()
-    // Cluster Subscription
+    cluster.subscribe(self, initialStateMode = InitialStateAsEvents, classOf[MemberEvent], classOf[UnreachableMember])
+
 
   }
 
   override def postStop(): Unit = {
-    //Cluster unsubscribe
-
+    cluster.unsubscribe(self)
     super.postStop()
   }
 
