@@ -21,21 +21,24 @@ class BoardActor(val shipsNumber:Int, val statisticsActor:ActorRef) extends Acto
     case Ship(pos, orientation, length, sunk) =>
       sunks += 1
       if (sunks == shipsNumber) {
-        /* ------------------------ MENSAJE DE RESULTADOS A STATISTIC ACTOR -------------------------------------*/
+        statisticsActor ! Score
         if (playersAlive.nonEmpty) {
-          /*----------------------- MENSAJE DE FIN DE PARTIDA A TODOS LOS PLAYERS -------------------------------*/
+          playersAlive.foreach(member => context.actorSelection(RootActorPath(member.address) / "user" / "playerActor")
+            ! FinishBattle)
         }
       }
 
     case Shot(pos) =>
-      log.info("-------------------> BoardActor gets a shot message")
       boardElements :::= Shot(pos) :: Nil
       if (playersAlive.nonEmpty) {
         playersAlive.foreach(member => context.actorSelection(RootActorPath(member.address) / "user" / "playerActor")
           ! BoardUpdate(boardElements))
       }
 
-      /*-----------------IMPLEMENTAR RECIBIR MENSAJE DE SCORE RESULT QUE LLEGA DE STATISTIC ACTOR ----------------*/
+    case ScoreResult(results)=>
+      log.info(results)
+      playersAlive.foreach(member => context.actorSelection(RootActorPath(member.address) / "user" / "playerActor")
+        ! ScoreResult(results))
 
 
     case MemberUp(member) =>
@@ -52,6 +55,7 @@ class BoardActor(val shipsNumber:Int, val statisticsActor:ActorRef) extends Acto
     case MemberRemoved(member, previousStatus) =>
       if (member.roles.contains("player"))
         playersAlive=playersAlive.filter(_!=member)
+
     case _: MemberEvent => // ignore
 
   }
